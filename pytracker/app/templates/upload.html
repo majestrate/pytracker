@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <form id="uploadform" action="{{site_prefix}}upload" method="POST">
+    <div class="inputfield">
+      <label for="torrent">Torrent:</label>
+      <input type="file" name="torrent" id="torrent">
+    </div>
+    <div class="inputfield">
+      <label for="category">Category:</label>
+      <select id="category" name="category">
+        {% for cat in cats %}
+          <option value="{{cat.cat_id}}">{{cat.name}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="inputfield">
+      <input type="submit" value="upload">
+    </div>
+  </form>
+{% endblock %}

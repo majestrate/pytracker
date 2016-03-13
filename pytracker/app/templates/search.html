@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <header>
+    <div id="front">
+      <img src="{{static_prefix}}img/front.png"></img>
+      <form action="{{site_prefix}}search">
+        <input class="search" name="q"></input>
+        <input class="submit" type="submit" value="search"></input>
+      </form>
+    </div>
+  </header>
+{% endblock %}

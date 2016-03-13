@@ -1,0 +1,3 @@
+#all , #navbar {
+    background-image: url("{{static_prefix}}img/grain.png");
+}

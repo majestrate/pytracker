@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Search results for '{{terms}}'{% endblock %}
+{% block navbar %}
+  <form action="{{site_prefix}}search" class="navbaritem">
+    <input class="search" name="q"></input>
+    <input class="submit" type="submit" value="search"></input>
+  </form>
+{% endblock %}
+{% block content %}
+  <section>
+    {% if results %}
+      <div class="results">
+        Results for: <span class="term">'{{terms}}'</span>
+      </div>
+      {% for torrent in results %}
+      <div class="result">
+        <div class="header">
+          <a class="magnet" href="magnet:?xt=urn:btih:{{torrent.infohash}}"><img src="{{static_prefix}}img/magnet.png"></img></a>
+          <a class="download" href="{{torrent.downloadURL}}"><img src="{{static_prefix}}img/download.png"></img></a>
+          <a class="title" href="{{torrent.infoURL}}">{{torrent.title}}</a>
+        </div>
+        <div class="summary">
+          {{torrent.summary}}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="noresult">
+      No Results Found for: <span class="term">'{{terms}}'</span>
+    </div>
+  {% endif %}
+  <div id="querytime">
+    Search Took {{time}} seconds
+  </div>
+  </section>
+{% endblock %}

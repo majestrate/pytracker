@@ -4,6 +4,14 @@
 #all {
     background-color: #eeeeee;
     display: flex;
+    font-family: sans-serif;
+}
+
+#debug {
+    align-self: flex-end;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
 }
 
 #navbar {
@@ -11,9 +19,20 @@
     top: 0px;
     left: 0px;
     z-index: 100;
-    position: absolute;
+    position: fixed;
     box-shadow: 0px 1px 5px black;
-    background-color: #dddddd
+    background-color: #dddddd;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#upload {
+    
+}
+
+#uploadform {
+    padding: 3em;
 }
 
 #content {
@@ -22,10 +41,39 @@
     width: 50%;
 }
 
+img.logo {
+    max-width: 24px;
+    max-height: 24px;
+}
+
 #front {
     width: 100%;
 }
 
+#front > img {
+    margin-left: 25%;
+    margin-right: 25%;
+}
+
 input.search {
-    width: 90%;
+    width: 85%;
+}
+input.submit {
+    width: 10%;
+}
+
+.navbaritem {
+}
+
+form.navbaritem {
+    width: 100%;
+    max-width: 700px;
+}
+
+.results {
+}
+
+.noresult {
+    font-weight: bold;
+    font-size: 2em;
 }

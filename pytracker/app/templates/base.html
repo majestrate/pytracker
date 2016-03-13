@@ -1,24 +1,39 @@
 <html>
   <head>
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{{title}}{% endblock %}</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="{{static_prefix}}css/boilerplate.css"></link>
     <link rel="stylesheet" href="{{static_prefix}}css/site.css"></link>
+    <link rel="stylesheet" href="{{site_prefix}}css/dynamic.css"></link>
     <link rel="stylesheet" href="{{static_prefix}}css/branding.css"></link>
+    <script type="text/javascript" src="{{static_prefix}}js/main.js">
+    </script>
   </head>
   <body id="all">
     <!-- begin navbar -->
     <div id="navbar">
-      <a href="{{site_prefix}}"><img src="{{static_prefix}}img/logo.png"></img></a>
+      <a class="navbaritem" href="{{site_prefix}}"><img src="{{static_prefix}}img/logo.png" class="logo"></img></a>
+      <a id="upload" class="navbaritem" href="{{site_prefix}}upload">upload</a>
       {% block navbar %}{% endblock %}
     </div>
     <!-- end navbar -->
-
     <!-- begin content -->
     <div id="content">
-    {% block content %}
-    {% endblock %}
+      {% block content %}
+      {% endblock %}
     </div>
     <!-- end content -->
+
+    {% if debuginfo %}  
+      <!-- begin debug -->
+      <div id="debug">
+        <pre>
+        {% for debugline in debuginfo %}
+          {{debugline}}
+        {% endfor %}
+        </pre>
+        </div>
+      <!-- end debug -->
+    {% endif %}
   </body>
 </html>
