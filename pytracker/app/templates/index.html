@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+  <header>
+    <div id="front">
+      <form action="search">
+        <input class="search" name="q"></input>
+        <input type="submit" value="search"></input>
+      </form>
+    </div>
+  </header>
+{% endblock %}

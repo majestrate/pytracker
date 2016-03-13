@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{static_prefix}}css/boilerplate.css"></link>
+    <link rel="stylesheet" href="{{static_prefix}}css/site.css"></link>
+    <link rel="stylesheet" href="{{static_prefix}}css/branding.css"></link>
+  </head>
+  <body id="all">
+    <!-- begin navbar -->
+    <div id="navbar">
+      <a href="{{site_prefix}}"><img src="{{static_prefix}}img/logo.png"></img></a>
+      {% block navbar %}{% endblock %}
+    </div>
+    <!-- end navbar -->
+
+    <!-- begin content -->
+    <div id="content">
+    {% block content %}
+    {% endblock %}
+    </div>
+    <!-- end content -->
+  </body>
+</html>
