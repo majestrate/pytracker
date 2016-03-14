@@ -13,7 +13,7 @@ def torrentsByKeywordAndCategory(session, keywords, category):
     if category is not None:
         if isinstance(category, str):
             # get category by name
-            cat_q = session.query(models.Category).filter(models.Category.name == category)
+            cat_q = session.query(models.Category.cat_id).filter(models.Category.name == category)
 
     result_q = session.query(models.SearchResult.t_id)
     
