@@ -14,7 +14,7 @@ config = {
     # title of the site
     "SITE_NAME": "pytracker",
     # enable debug mode?
-    "DEBUG": True,
+    "DEBUG": False,
     # app secret key goes here
     "SECRET_KEY": os.urandom(8),
     # upload directory

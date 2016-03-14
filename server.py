@@ -8,7 +8,7 @@ def main():
     args = ap.parse_args()
     action = args.action.lower()
     if action == 'run':
-        pytracker.run(debug=True)
+        pytracker.run()
     elif action == 'nuke':
         pytracker.nuke()
     elif action == 'seed':
