@@ -2,6 +2,7 @@
 # override config parameters here
 #
 
+import os
 
 config = {
     # database uri
@@ -12,5 +13,10 @@ config = {
     "SITE_PREFIX": "/",
     # title of the site
     "SITE_NAME": "pytracker",
+    # enable debug mode?
     "DEBUG": True,
+    # app secret key goes here
+    "SECRET_KEY": os.urandom(8),
+    # upload directory
+    "UPLOAD_DIR": "/tmp/uploads"
 }

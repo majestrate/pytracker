@@ -6,9 +6,13 @@ import flask
 from .server import app, db
 from . import models
 from . import search
+from . import torrent
+from . import upload
 from . import util
 
+import os
 import time
+
 
 def render_template(name, **kwargs):
     """
@@ -43,19 +47,54 @@ def serveDynamicCSS():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def handleUpload():
-    if flask.request.method.lower() == 'get':
-        cats = db.session.query(models.Category).all()
-        return render_template('upload.html', cats=cats, title="upload")
-    return 'dix'
+    cats = db.session.query(models.Category).all()
+    if flask.request.method.lower() == 'post':
+        form = flask.request.form
+        files = flask.request.files
+        t = None
+        err = None
+        res = None
+        if 'torrent' not in files:
+            err = "no torrent file included"
+        elif 'cat' not in form:
+            err = "no category selected"
+        elif 'desc' not in form:
+            err = "empty torrent description"
+        else:
+            # all good parsing
+            res = upload.handleUpload(db.session, flask.request)
+        if res:
+            t, tdict, err = res
+            if err is None:
+                # save uploaded torrent
+                with open(os.path.join(app.config["UPLOAD_DIR"], t.filename()), 'wb') as f:
+                    torrent.dumpTorrent(tdict, f)
+                flask.flash("uploaded {}".format(t.title))
+                # we uploaded the torrent correctly
+                return render_template("result.html", url=t.infoURL())
+        # some error probably
+        flask.flash("upload failed: {}".format(err))
+        return render_template("result.html", url=flask.request.url)
+    return render_template("upload.html", cats=cats, title="upload")
 
+@app.route("/torrent/<int:tid>")
+def serveTorrent(tid):
+    session = db.session
+    t = session.query(models.Torrent).filter(models.Torrent.t_id == tid).first()
+    if t:
+        files = session.query(models.TorrentFile).filter(models.TorrentFile.torrent_id == tid).all()
+        return render_template("torrent.html", torrent=t, files=files)
+    flask.abort(404)
+
+@app.route("/download/<path:fname>")
+def serveDownload(fname):
+    return flask.send_from_directory(app.config["UPLOAD_DIR"], fname, as_attachment=True)
+    
 @app.route('/search')
 def handleSearchQuery():
     args = flask.request.args
     terms = args.get('q', '')
     start = time.time()
-    search_result = search.find(db.session, args)
-    results = list()
-    for res in search_result:
-        results.append(res)
+    results = search.find(db.session, args)
     dlt = time.time() - start
     return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search")

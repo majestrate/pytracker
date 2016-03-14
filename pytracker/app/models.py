@@ -3,7 +3,7 @@
 #
 
 from .server import db
-
+from . import torrent
 import datetime
     
 class Torrent(db.Model):
@@ -26,19 +26,29 @@ class Torrent(db.Model):
     # title of the torrent
     title = db.Column(db.Text)
     
-    def __init__(self, infohash, description):
+    def __init__(self, tdict, description):
         """
         construct torrent given 40 byte infohash as hex with description
         """
-        assert len(infohash) == 40
+        infohash = torrent.infohash_hex(tdict)
         self.infohash = infohash
+        
         if description is None:
             description = 'No Description'
         self.description = description
-        now = datetime.utcnow()
+
+        self.title = torrent.torrentName(tdict)
+        
+        now = datetime.datetime.utcnow()
         self.uploaded = now
         self.updated = now
-        
+
+    def filename(self):
+        """
+        get filename for the corrisponding uploaded torrent file
+        """
+        return '{}-{}.torrent'.format(self.infohash, self.t_id)
+    
     def summary(self, truncate=500):
         """
         get short summary, truncate if too big
@@ -48,9 +58,11 @@ class Torrent(db.Model):
             desc = desc[:truncate] + '...'
         return desc
 
-
+    def magnet(self):
+        return 'magnet:?xt=urn:btih:{}'.format(self.infohash)
+    
     def downloadURL(self):
-        return '/download/{}.torrent'.format(self.t_id)
+        return '/download/{}'.format(self.filename())
 
     def infoURL(self):
         return '/torrent/{}'.format(self.t_id)
@@ -60,6 +72,17 @@ class TorrentFile(db.Model):
     a filename included in a torrent's meta info
     """
     __tablename__ = 'torrentfiles'
+
+    def __init__(self, tdict, tid):
+        self.filesize = tdict[b'length']
+        if b'path' in tdict:
+            # one of multiple files
+            self.filename = tdict[b'path'][0].decode('utf-8')
+        else:
+            # a single file
+            self.filename = tdict[b'name'].decode('utf-8')
+        self.torrent_id = tid
+        
     # if of this entry
     id = db.Column(db.Integer, primary_key=True)
     # filename of a file
@@ -85,17 +108,6 @@ class Category(db.Model):
         name must be unique
         """
         self.name = name
-
-
-class SearchTag(db.Model):
-    """
-    a keyword used in searching
-    """
-
-    __tablename__ = 'searchtags'
-    
-    tag_id = db.Column(db.Integer, primary_key=True)
-    keyword = db.Column(db.String, unique=True)
         
 class SearchResult(db.Model):
     """
@@ -103,13 +115,18 @@ class SearchResult(db.Model):
     """
     __tablename__ = 'searchresults'
 
+    def __init__(self, torrent, category, keyword):
+        self.t_id = torrent.t_id
+        self.cat_id = category.cat_id
+        self.keyword = keyword
+    
     id = db.Column(db.Integer, primary_key=True)
     # which torrent is matched in this result
     t_id = db.Column(db.Integer, db.ForeignKey('torrents.t_id'))
     # which category is matched with this result
     cat_id = db.Column(db.Integer, db.ForeignKey('categories.cat_id'))
-    # which search tag does this result match with
-    tag_id = db.Column(db.Integer, db.ForeignKey('searchtags.tag_id'))
+    # a keyword which matches this result
+    keyword = db.Column(db.String)
 
 
 class CommonWord(db.Model):

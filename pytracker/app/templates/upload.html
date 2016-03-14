@@ -1,17 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-  <form id="uploadform" action="{{site_prefix}}upload" method="POST">
+  <form id="uploadform" action="{{site_prefix}}upload" method="POST" enctype="multipart/form-data">
     <div class="inputfield">
       <label for="torrent">Torrent:</label>
       <input type="file" name="torrent" id="torrent">
     </div>
     <div class="inputfield">
       <label for="category">Category:</label>
-      <select id="category" name="category">
+      <select id="category" name="cat">
         {% for cat in cats %}
           <option value="{{cat.cat_id}}">{{cat.name}}</option>
         {% endfor %}
       </select>
+    </div>
+    <div class="inputfield">
+      <label for="description">Comment:</label>
+      <textarea id="description" name="desc"></textarea>
     </div>
     <div class="inputfield">
       <input type="submit" value="upload">

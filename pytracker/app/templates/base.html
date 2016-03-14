@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="{{static_prefix}}css/branding.css"></link>
     <script type="text/javascript" src="{{static_prefix}}js/main.js">
     </script>
+    {% block head %}
+    {% endblock %}
   </head>
   <body id="all">
     <!-- begin navbar -->
@@ -19,6 +21,15 @@
     <!-- end navbar -->
     <!-- begin content -->
     <div id="content">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div id="flashes">
+          {% for msg in messages %}
+            <label class="error">{{msg}}</label>
+          {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       {% block content %}
       {% endblock %}
     </div>

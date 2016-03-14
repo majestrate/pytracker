@@ -14,20 +14,16 @@ def torrentsByKeywordAndCategory(session, keywords, category):
         if isinstance(category, str):
             # get category by name
             cat_q = session.query(models.Category).filter(models.Category.name == category)
-    if keywords and len(keywords) > 0:
-        # keywords specified
-        # check tags
-        keywords_q = session.query(models.SearchTag.tag_id).filter(models.SearchTag.keyword.in_(keywords))
-        
-    result_q = session.query(models.SearchResult, models.SearchResult.t_id)
+
+    result_q = session.query(models.SearchResult.t_id)
     
     # apply category filter query
     if cat_q:
         result_q = result_q.filter(models.SearchResult.cat_id.in_(cat_q))
 
     # apply keyword filter query
-    if keywords_q:
-        result_q = result_q.filter(models.SearchResult.tag_id.in_(keywords_q))
+    if keywords and len(keywords) > 0:
+        result_q = result_q.filter(models.SearchResult.keyword.in_(keywords))
     
     return result_q
     
@@ -48,7 +44,7 @@ def torrentsById(session, ids):
     """
     build a query that gets torrent models given their ids
     """
-    return ids.correlate(session.query(models.Torrent))
+    return session.query(models.Torrent).filter(models.Torrent.t_id.in_(ids))
 
 def paginate(q, page, perpage):
     """
@@ -57,6 +53,12 @@ def paginate(q, page, perpage):
     offset = page * perpage
     return q.offset(offset).limit(perpage)
 
+def hasTorrentByInfoHash(session, infohash):
+    """
+    return true if we already have a torrent given its infohash
+    return false if we don't have a torrent with this infohash
+    """
+    return session.query(models.Torrent).filter(models.Torrent.infohash == infohash).count() > 0
 
 def filterCommonWords(session, keywords):
     """

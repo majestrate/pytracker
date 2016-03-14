@@ -18,7 +18,7 @@ def removeBogons(word):
         if ch.isdigit() or ch.isalpha():
             res += ch
     return res
-
+               
 def find(session, args):
     """
     find 1 page of results given a search term
@@ -40,13 +40,13 @@ def find(session, args):
     keywords = list()
     for keyword in query.filterCommonWords(session, words):
         keywords.append(keyword)
+    if len(keywords) > 0:
+        # build search
+        q = query.torrentsByKeywordAndCategory(session, keywords, category)
+        # paginate
+        q = query.paginate(q, page, perpage)
+        # fetch torrent models
+        q = query.torrentsById(session, q)
+        # obtain
+        yield from q.all()
 
-    # build search
-    q = query.torrentsByKeywordAndCategory(session, keywords, category)
-    # paginate
-    q = query.paginate(q, page, perpage)
-    # fetch torrent models
-    q = query.torrentsById(session, q)
-    # obtain
-    yield from q
-    

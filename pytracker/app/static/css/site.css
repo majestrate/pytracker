@@ -77,3 +77,8 @@ form.navbaritem {
     font-weight: bold;
     font-size: 2em;
 }
+
+.error {
+    font-weight: bold;
+    color: red;
+}
