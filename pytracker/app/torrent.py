@@ -18,6 +18,24 @@ def dumpTorrent(tdict, fd):
     data = bencodepy.encode(tdict)
     fd.write(data)
 
+def getFileLength(tdict):
+    """
+    return file length given a parsed dict
+    """
+    return tdict[b'length']
+    
+def getFileName(tdict):
+    """
+    get filename from a torrent dict part
+    """
+    if b'path' in tdict:
+        # one of multiple files
+        return b'/'.join(tdict[b'path']).decode('utf-8')
+    else:
+        # a single file
+        return tdict[b'name'].decode('utf-8')
+
+    
 def validate(tdict):
     """
     check if this torrent dict is valid

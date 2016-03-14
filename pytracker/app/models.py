@@ -74,13 +74,8 @@ class TorrentFile(db.Model):
     __tablename__ = 'torrentfiles'
 
     def __init__(self, tdict, tid):
-        self.filesize = tdict[b'length']
-        if b'path' in tdict:
-            # one of multiple files
-            self.filename = tdict[b'path'][0].decode('utf-8')
-        else:
-            # a single file
-            self.filename = tdict[b'name'].decode('utf-8')
+        self.filesize = torrent.getFileLength(tdict)
+        self.filename = torrent.getFileName(tdict)
         self.torrent_id = tid
         
     # if of this entry
@@ -91,6 +86,20 @@ class TorrentFile(db.Model):
     filesize = db.Column(db.Integer)
     # the torrent's id
     torrent_id = db.Column(db.Integer, db.ForeignKey('torrents.t_id'))
+
+    def prettySize(self):
+        unit = 'B'
+        size = self.filesize
+        if self.filesize > 1024:
+            unit = 'KB'
+            size /= 1024.0
+        if size > 1024:
+            unit = 'MB'
+            size /= 1024.0
+        if size > 1024:
+            unit = 'GB'
+            size /= 1024.0
+        return '{} {}'.format(round(size, 2), unit)
     
 class Category(db.Model):
     """

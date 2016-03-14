@@ -3,6 +3,8 @@ search engine
 """
 from . import models
 
+import string
+
 def torrentsByKeywordAndCategory(session, keywords, category):
     """
     build query that gets torrent ids given a category name and a list of keywords that matches to it
@@ -24,7 +26,7 @@ def torrentsByKeywordAndCategory(session, keywords, category):
     # apply keyword filter query
     if keywords and len(keywords) > 0:
         result_q = result_q.filter(models.SearchResult.keyword.in_(keywords))
-    
+        
     return result_q
     
         
@@ -68,11 +70,16 @@ def filterCommonWords(session, keywords):
     words = dict()
     # collect keywords into a dict of unique words
     for word in keywords:
+        # split up via punctuation
+        for ch in string.punctuation:
+            word = word.replace(ch, ' ')
         # only do words with more than 3 words
-        if len(word) > 3:
-            if word not in words:
-                words[word] = 0
-            words[word] += 1
+        word = word.lower()
+        for w in word.split():
+            if len(w) > 2:
+                if w not in words:
+                    words[w] = 0
+                words[w] += 1
 
     # find all common words in the unique keywords
     unique_keywords = words.keys()

@@ -2,7 +2,25 @@
 {% block title %} {{torrent.title}} {% endblock %}
 {% block content %}
   <div class="torrent">
+    <div class="header">
     <a href="{{torrent.downloadURL()}}">download</a>
     <a href="{{torrent.magnet()}}">magnet</a>
+    </div>
+    <div class="files">
+      <p> Files: </p>
+      <ul>
+        {% for f in files %}
+          <li>
+            <div class="file">
+              <span class="filename">{{f.filename}}</span>
+              <span class="filesize">{{f.prettySize()}}</span>
+            </div>
+          </li>
+      {% endfor %}
+      </ul>
+    </div>
+    <div class="description">
+      <p>{{torrent.description}}</p>
+    </div>
   </div>
 {% endblock %}

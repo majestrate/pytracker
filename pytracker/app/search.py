@@ -25,7 +25,7 @@ def find(session, args):
     yield results
     """
     # collect arguments
-    keywords = args.get('q', '').split(' ')
+    keywords = args.get('q', '').split()
     category = args.get('c', None)
     page = args.get('p', 0, type=int)
     perpage = args.get('l', 10, type=int)

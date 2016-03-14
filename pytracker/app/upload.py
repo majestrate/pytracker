@@ -3,7 +3,9 @@ from . import models
 from . import query
 
 def generateSearchKeywords(session, text):
-    yield from query.filterCommonWords(session, text.split())
+    if isinstance(text, str):
+        text = text.split()
+    yield from query.filterCommonWords(session, text)
 
 def handleUpload(session, request):
     """
@@ -30,20 +32,25 @@ def handleUpload(session, request):
         # add torrent
         t = models.Torrent(tdict, description)
         session.add(t)
+        session.commit()
+        files = list()
         info = tdict[b'info']
         # add file records
         if b'files' in info:
             # many files
             for f in info[b'files']:
                 session.add(models.TorrentFile(f, t.t_id))
+                files.append(torrent.getFileName(f))
         else:
             # one file
             session.add(models.TorrentFile(info, t.t_id))
-
+            files.append(torrent.getFileName(info))
         # generate keywords from description
         for keyword in generateSearchKeywords(session, description):
             session.add(models.SearchResult(t, cat, keyword))
-            
+        # generate keywords from files
+        for keyword in generateSearchKeywords(session, ' '.join(files)):
+            session.add(models.SearchResult(t, cat, keyword))
         session.commit()
         return t, tdict, None
     return None, None, "invalid torrent file"

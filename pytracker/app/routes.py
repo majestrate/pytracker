@@ -82,7 +82,7 @@ def serveTorrent(tid):
     session = db.session
     t = session.query(models.Torrent).filter(models.Torrent.t_id == tid).first()
     if t:
-        files = session.query(models.TorrentFile).filter(models.TorrentFile.torrent_id == tid).all()
+        files = session.query(models.TorrentFile).filter(models.TorrentFile.torrent_id == t.t_id).all()
         return render_template("torrent.html", torrent=t, files=files)
     flask.abort(404)
 
