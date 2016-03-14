@@ -179,6 +179,6 @@ def handleSearchQuery(p):
     start = time.time()
     results = search.find(db.session, args)
     dlt = time.time() - start
-    if len(results) == 0:
+    if results is None or len(results) == 0:
         next = None
     return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search", page=p)

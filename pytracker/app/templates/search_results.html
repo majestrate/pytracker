@@ -37,27 +37,35 @@
         Torrents in {{category}}
       {% endif %}
       </div>
-      {% for torrent in results %}
-        <div class="result">
-        <div class="header">
-          <a class="magnet" href="{{site_prefix}}{{torrent.magnet()}}"><img src="{{static_prefix}}img/magnet.png"></img></a>
-          <a class="download" href="{{site_prefix}}{{torrent.downloadURL()}}"><img src="{{static_prefix}}img/download.png"></img></a>
-          <a class="title" href="{{site_prefix}}{{torrent.infoURL()}}">{{torrent.title}}</a>
-        </div>
-        <div class="summary">
-          {{torrent.summary()}}
-        </div>
-        </div>
-    {% endfor %}
-  {% else %}
-    <div class="noresult">
-      {% if terms %}
-        No Results Found for: <span class="term">'{{terms}}'</span>
+      {% if results %}
+        {% for torrent in results %}
+          <div class="result">
+            <div class="header">
+              <a class="magnet" href="{{site_prefix}}{{torrent.magnet()}}"><img src="{{static_prefix}}img/magnet.png"></img></a>
+              <a class="download" href="{{site_prefix}}{{torrent.downloadURL()}}"><img src="{{static_prefix}}img/download.png"></img></a>
+              <a class="title" href="{{site_prefix}}{{torrent.infoURL()}}">{{torrent.title}}</a>
+            </div>
+            <div class="summary">
+              {{torrent.summary()}}
+            </div>
+          </div>
+        {% endfor %}
       {% else %}
-        No Uploaded Torrents in {{category}}
+        <div class="noresult">
+          {% if terms %}
+            No Torrents found for: <span class="term">'{{terms}}'</span>
+          {% else %}
+            {% if category %}
+              No Uploaded Torrents in {{category}}
+            {% endif %}
+          {% endif %}
+        </div>
       {% endif %}
-    </div>
-  {% endif %}
+    {% else %}
+      {% if terms %}
+        <span class="noresult"> No torrents found for <span class="term">'{{terms}}' </span></span>
+      {% endif %}
+    {% endif %}
   <div id="querytime">
     Search Took {{time}} seconds
   </div>

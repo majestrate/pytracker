@@ -3,7 +3,7 @@
   <form id="uploadform" action="{{site_prefix}}upload" method="POST" enctype="multipart/form-data">
     <div class="inputfield">
       <label for="torrent">Torrent:</label>
-      <input type="file" name="torrent" id="torrent">
+      <input type="file" name="torrent" id="torrent" accept=".torrent" required="required">
     </div>
     <div class="inputfield">
       <label for="category">Category:</label>
@@ -15,7 +15,7 @@
     </div>
     <div class="inputfield">
       <label for="description">Comment:</label>
-      <textarea id="description" name="desc"></textarea>
+      <textarea id="description" name="desc" required="required"></textarea>
     </div>
     <div class="inputfield">
       <input type="submit" value="upload">

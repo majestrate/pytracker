@@ -125,3 +125,13 @@ form.navbaritem {
     justify-content: flex-start;
     flex-direction: column;
 }
+
+.inputfield {
+    margin: 1em;
+}
+
+.inputfield > #description {
+    width: 100%;
+    height: 10%;
+    resize: none;
+}
