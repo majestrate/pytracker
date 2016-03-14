@@ -64,6 +64,10 @@
     {% else %}
       {% if terms %}
         <span class="noresult"> No torrents found for <span class="term">'{{terms}}' </span></span>
+      {% else %}
+        {% if category %}
+        <span class="noresult">No torrents uploaded in '{{category}}'</span>
+        {% endif %}
       {% endif %}
     {% endif %}
   <div id="querytime">
