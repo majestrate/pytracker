@@ -8,6 +8,7 @@
 }
 
 #debug {
+    visibility: hidden;
     align-self: flex-end;
     position: fixed;
     bottom: 0px;
@@ -83,4 +84,44 @@ form.navbaritem {
 .error {
     font-weight: bold;
     color: red;
+}
+
+.uploads {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.uploaded {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.upload {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.categorylist {
+    display: flex;
+    justify-content: space-between;
+}
+
+.files {
+    background-color: rgba(128, 128, 128, 0.3);
+    padding: 1%;
+    width: 100%;
+}
+
+.description {
+    margin-bottom: 1em;
+    padding: 1em;
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.fileslist {
+    margin: 1em;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
 }

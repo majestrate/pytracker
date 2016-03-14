@@ -1,7 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Search results for '{{terms}}'{% endblock %}
-{% block navbar %}
-  
+{% block title %}
+  {% if category %}
+    Torrents in {{category}}
+  {% else %}
+    Search results for '{{terms}}'
+  {% endif %}
+{% endblock %}
+{% block head %}
+  {% if rss_url %}
+  <link rel="alternate" href="{{rss_url}}" type="application/rss+xml" title="RSS 2.0" />
+  {% endif %}
+{% endblock %}
+{% block navbar %}  
   {% if prev_page %}
     <div class="navbaritem">
       <a href="{{prev_page}}">prev</a>

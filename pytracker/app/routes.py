@@ -4,6 +4,7 @@
 
 import flask
 from .server import app, db
+from . import feed
 from . import models
 from . import query
 from . import search
@@ -23,6 +24,8 @@ def render_template(name, **kwargs):
     kwargs["site_prefix"] = app.config["SITE_PREFIX"]
     kwargs["static_prefix"] = app.config["STATIC_PREFIX"]
     kwargs["debuginfo"] = util.get_debug_queries()
+    # inject force no js
+    kwargs["nojs"] = app.config['NOJS']
     # now do the render dance !
     return flask.render_template(name, **kwargs)
 
@@ -35,8 +38,8 @@ def serveIndex():
     cats = db.session.query(models.Category).all()
     # get last 10 torrents
     torrents = db.session.query(models.Torrent).order_by(models.Torrent.uploaded.desc()).limit(10)
-    
-    return render_template('index.html', title="Search", categories=cats, torrents=torrents)
+    url = util.fullSiteURL(app, "feed", "all.rss")
+    return render_template('index.html', title="Search", categories=cats, torrents=torrents, rss_url=url)
 
 
 @app.route("/css/dynamic.css")
@@ -51,8 +54,23 @@ def serveDynamicCSS():
         return response
     return render_template("dynamic.css")
 
+@app.route('/js/dynamic.js')
+def serveDynamicJS():
+    """
+    serve dynamically generated js
+    contains warning to force no js if configured to do so
+    """
+    @flask.after_this_request
+    def after(response):
+        response.headers["Content-Type"] = 'text/javascript'
+        return response
+    return render_template("dynamic.js")
+    
 @app.route('/upload', methods=['GET', 'POST'])
 def handleUpload():
+    """
+    handle upload of torrent
+    """
     cats = db.session.query(models.Category).all()
     if flask.request.method.lower() == 'post':
         form = flask.request.form
@@ -85,6 +103,9 @@ def handleUpload():
 
 @app.route("/torrent/<int:tid>")
 def serveTorrent(tid):
+    """
+    serve info page for a torrent
+    """
     session = db.session
     t = session.query(models.Torrent).filter(models.Torrent.t_id == tid).first()
     if t:
@@ -94,10 +115,37 @@ def serveTorrent(tid):
 
 @app.route("/download/<path:fname>")
 def serveDownload(fname):
+    """
+    serve uploaded torrent
+    """
     return flask.send_from_directory(app.config["UPLOAD_DIR"], fname, as_attachment=True)
 
+@app.route("/feed/<cat>.<feedtype>")
+def serveCategoryRSS(cat, feedtype):
+    """
+    serve rss feed for category
+    if category is "all" get feed for all categories
+    """
+    limit = flask.request.args.get("l", 10, type=int)
+    cat = cat.lower()
+    if cat is 'all':
+        cat = None
+    q = query.torrentsByKeywordAndCategory(db.session, None, cat)
+    q = query.torrentsById(db.session, q)
+    q = query.paginate(q, 0, limit)
+    feedtype = feedtype.lower()
+    flask.response.headers['Content-Type'] = 'application/{}+xml'.format(feedtype)
+    f = feed.generate(app, cat, q.all())
+    if feedtype == 'rss':
+        return f.rss_str()
+    else:
+        flask.abort(404)
+    
 @app.route("/cat/<cat>/<int:page>")
 def serveCategoryPage(cat, page):
+    """
+    serve page for category
+    """
     args = flask.request.args
     prev = None
     if page > 0:
@@ -111,19 +159,26 @@ def serveCategoryPage(cat, page):
     dlt = time.time() - start
     if len(torrents) == 0:
         next = None
-    return render_template("search_results.html", results=torrents, time=round(dlt, 2), title="browse torrents", category=cat, next_page=next, prev_page=prev)
+    return render_template("search_results.html", results=torrents, time=round(dlt, 2), title="browse torrents", category=cat, next_page=next, prev_page=prev, rss_url=util.fullSiteURL(app, 'feed', '{}.rss'.format(cat)))
+
+@app.route('/search')
+def handleSearch():
+    return render_template("search.html")
 
 @app.route('/search/<int:p>')
 def handleSearchQuery(p):
+    """
+    handle search query
+    """
     args = flask.request.args
     terms = args.get('q', '')
     prev = None
     if p > 0:
-        prev = flask.url_for('handleSearchQuery', p-1)
-    next = flask.url_for('handleSearchQuery', p+1)
+        prev = flask.url_for('handleSearchQuery', p=p-1)
+    next = flask.url_for('handleSearchQuery', p=p+1)
     start = time.time()
     results = search.find(db.session, args)
     dlt = time.time() - start
     if len(results) == 0:
         next = None
-    return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search", page=pageno)
+    return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search", page=p)

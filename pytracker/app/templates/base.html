@@ -1,12 +1,12 @@
 <html>
   <head>
-    <title>{% block title %}{{title}}{% endblock %}</title>
+    <title>{% block title %}{% if title %}{{title}}{% endif %}{% endblock %}</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="{{static_prefix}}css/boilerplate.css"></link>
     <link rel="stylesheet" href="{{static_prefix}}css/site.css"></link>
     <link rel="stylesheet" href="{{site_prefix}}css/dynamic.css"></link>
     <link rel="stylesheet" href="{{static_prefix}}css/branding.css"></link>
-    <script type="text/javascript" src="{{static_prefix}}js/main.js">
+    <script type="text/javascript" src="{{site_prefix}}js/dynamic.js">
     </script>
     {% block head %}
     {% endblock %}

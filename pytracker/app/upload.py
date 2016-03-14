@@ -17,10 +17,16 @@ def handleUpload(session, request):
 
     description = request.form['desc']
 
+    if len(description) > 1024 * 8:
+        return None, None, "description too long"
+    
     # load torrent
     f = request.files['torrent']
     # parse torrent
-    tdict = torrent.parseTorrent(f)
+    try:
+        tdict = torrent.parseTorrent(f)
+    except:
+        return None, None, "not a torrent file"
     # validate torrent
     if torrent.validate(tdict):
         # generate infohash
@@ -29,6 +35,9 @@ def handleUpload(session, request):
         if query.hasTorrentByInfoHash(session, infohash):
             # we already have this torrent
             return None, None, 'torrent already uploaded'
+        name = torrent.torrentName(tdict)
+        if len(name) > 512:
+            return None, None, 'torrent name too long'
         # add torrent
         t = models.Torrent(tdict, description)
         session.add(t)

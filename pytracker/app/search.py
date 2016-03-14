@@ -49,5 +49,5 @@ def find(session, args):
         # fetch torrent models
         q = query.torrentsById(session, q)
         # obtain
-        yield from q.all()
+        return q.all()
 

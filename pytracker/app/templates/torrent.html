@@ -3,27 +3,25 @@
 {% block content %}
   <div class="torrent">
     <div class="header">
-    <a href="{{torrent.downloadURL()}}">download</a>
+    <a href="{{site_prefix}}{{torrent.downloadURL()}}">torrent</a>
     <a href="{{torrent.magnet()}}">magnet</a>
+    </div>
+    <div class="description">
+      <pre>{{torrent.description}}</pre>
     </div>
     <div class="uploaded">
       Uploaded: {{torrent.uploadDate()}}
     </div>
     <div class="files">
       <p> Files: </p>
-      <ul>
+      <div class="fileslist">
         {% for f in files %}
-          <li>
-            <div class="file">
-              <span class="filename">{{f.filename}}</span>
-              <span class="filesize">{{f.prettySize()}}</span>
-            </div>
-          </li>
+          <div class="file">
+            <span class="filename">{{f.filename}}</span>
+            <span class="filesize">{{f.prettySize()}}</span>
+          </div>
       {% endfor %}
-      </ul>
-    </div>
-    <div class="description">
-      <p>{{torrent.description}}</p>
+      </div>
     </div>
   </div>
 {% endblock %}
