@@ -163,6 +163,9 @@ def serveCategoryPage(cat, page):
 
 @app.route('/search')
 def handleSearch():
+    """
+    handle search page
+    """
     return render_template("search.html")
 
 @app.route('/search/<int:p>')
@@ -171,7 +174,8 @@ def handleSearchQuery(p):
     handle search query
     """
     args = flask.request.args
-    terms = args.get('q', '')
+    terms = args.get('q', None)
+    cat = args.get('c', None)
     prev = None
     if p > 0:
         prev = flask.url_for('handleSearchQuery', p=p-1)
@@ -181,4 +185,4 @@ def handleSearchQuery(p):
     dlt = time.time() - start
     if results is None or len(results) == 0:
         next = None
-    return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search", page=p)
+    return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search", page=p, category=cat)

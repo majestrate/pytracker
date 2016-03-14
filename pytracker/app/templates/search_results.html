@@ -24,6 +24,9 @@
   {% endif %}
   <form action="{{site_prefix}}search/0" class="navbaritem">
     <input class="search" name="q"></input>
+    {% if category %}
+    <input type="hidden" name="c" value="{{category}}"></input>
+    {% endif %}
     <input class="submit" type="submit" value="search"></input>
   </form>
 {% endblock %}
@@ -31,12 +34,9 @@
   <section>
     {% if results %}
       <div class="results">  
-      {% if terms %}
-        Results for: <span class="term">'{{terms}}'</span>
-      {% else %}
-        Torrents in {{category}}
-      {% endif %}
+        Torrent results {% if terms %}for <span class="term">'{{terms}}'</span>{% endif %} {% if category %}in {{category}}{% endif %}
       </div>
+      {% endif %}
       {% if results %}
         {% for torrent in results %}
           <div class="result">
@@ -52,24 +52,9 @@
         {% endfor %}
       {% else %}
         <div class="noresult">
-          {% if terms %}
-            No Torrents found for: <span class="term">'{{terms}}'</span>
-          {% else %}
-            {% if category %}
-              No Uploaded Torrents in {{category}}
-            {% endif %}
-          {% endif %}
+          No Torrents found {% if term %}for <span class="term">'{{terms}}'</span>{% endif %}{% if category %} in {{category}}{% endif %}
         </div>
       {% endif %}
-    {% else %}
-      {% if terms %}
-        <span class="noresult"> No torrents found for <span class="term">'{{terms}}' </span></span>
-      {% else %}
-        {% if category %}
-        <span class="noresult">No torrents uploaded in '{{category}}'</span>
-        {% endif %}
-      {% endif %}
-    {% endif %}
   <div id="querytime">
     Search Took {{time}} seconds
   </div>
