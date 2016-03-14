@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Search results for '{{terms}}'{% endblock %}
 {% block navbar %}
+  
+  {% if prev_page %}
+    <div class="navbaritem">
+      <a href="{{prev_page}}">prev</a>
+    </div>
+  {% endif %}
+  {% if next_page %}
+    <div class="navbaritem">
+      <a href="{{next_page}}">next</a>
+    </div>
+  {% endif %}
   <form action="{{site_prefix}}search" class="navbaritem">
     <input class="search" name="q"></input>
     <input class="submit" type="submit" value="search"></input>
@@ -9,24 +20,32 @@
 {% block content %}
   <section>
     {% if results %}
-      <div class="results">
+      <div class="results">  
+      {% if terms %}
         Results for: <span class="term">'{{terms}}'</span>
+      {% else %}
+        Torrents in {{category}}
+      {% endif %}
       </div>
       {% for torrent in results %}
         <div class="result">
         <div class="header">
-          <a class="magnet" href="{{torrent.magnet()}}"><img src="{{static_prefix}}img/magnet.png"></img></a>
-          <a class="download" href="{{torrent.downloadURL()}}"><img src="{{static_prefix}}img/download.png"></img></a>
-          <a class="title" href="{{torrent.infoURL()}}">{{torrent.title}}</a>
+          <a class="magnet" href="{{site_prefix}}{{torrent.magnet()}}"><img src="{{static_prefix}}img/magnet.png"></img></a>
+          <a class="download" href="{{site_prefix}}{{torrent.downloadURL()}}"><img src="{{static_prefix}}img/download.png"></img></a>
+          <a class="title" href="{{site_prefix}}{{torrent.infoURL()}}">{{torrent.title}}</a>
         </div>
         <div class="summary">
           {{torrent.summary()}}
         </div>
-      </div>
+        </div>
     {% endfor %}
   {% else %}
     <div class="noresult">
-      No Results Found for: <span class="term">'{{terms}}'</span>
+      {% if terms %}
+        No Results Found for: <span class="term">'{{terms}}'</span>
+      {% else %}
+        No Uploaded Torrents in {{category}}
+      {% endif %}
     </div>
   {% endif %}
   <div id="querytime">

@@ -5,6 +5,7 @@
 from .server import db
 from . import torrent
 import datetime
+import time
     
 class Torrent(db.Model):
     """
@@ -18,9 +19,9 @@ class Torrent(db.Model):
     # the torrent infohash
     infohash = db.Column(db.String(40), unique=True)
     # when it was uploaded first
-    uploaded = db.Column(db.DateTime)
+    uploaded = db.Column(db.Integer)
     # when it was modified last
-    updated = db.Column(db.DateTime)
+    updated = db.Column(db.Integer)
     # description of torrent
     description = db.Column(db.Text)
     # title of the torrent
@@ -39,10 +40,13 @@ class Torrent(db.Model):
 
         self.title = torrent.torrentName(tdict)
         
-        now = datetime.datetime.utcnow()
+        now = int(time.time())
         self.uploaded = now
         self.updated = now
 
+    def uploadDate(self):
+        return time.strftime("%c", time.gmtime(self.uploaded))
+        
     def filename(self):
         """
         get filename for the corrisponding uploaded torrent file
@@ -62,10 +66,10 @@ class Torrent(db.Model):
         return 'magnet:?xt=urn:btih:{}'.format(self.infohash)
     
     def downloadURL(self):
-        return '/download/{}'.format(self.filename())
+        return 'download/{}'.format(self.filename())
 
     def infoURL(self):
-        return '/torrent/{}'.format(self.t_id)
+        return 'torrent/{}'.format(self.t_id)
     
 class TorrentFile(db.Model):
     """

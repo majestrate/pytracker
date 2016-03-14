@@ -18,7 +18,8 @@ def removeBogons(word):
         if ch.isdigit() or ch.isalpha():
             res += ch
     return res
-               
+
+
 def find(session, args):
     """
     find 1 page of results given a search term
@@ -28,7 +29,7 @@ def find(session, args):
     keywords = args.get('q', '').split()
     category = args.get('c', None)
     page = args.get('p', 0, type=int)
-    perpage = args.get('l', 10, type=int)
+    perpage = 10
     
     words = list()
     # filter bogus keyword parts

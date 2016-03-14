@@ -1,1 +1,21 @@
 {% extends "search.html" %}
+
+{% block torrents %}
+<ul class="categories">
+{% for cat in categories %}
+<li class="category">
+  <a href="{{site_prefix}}cat/{{cat.name}}/0">{{cat.name}}</a>
+</li>
+{% endfor %}
+</ul>
+<div class="uploaded">
+  <div>Recently uploaded:</div>
+  <ul>
+    {% for torrent in torrents %}
+    <li>
+      <a href="{{site_prefix}}{{torrent.infoURL()}}">{{torrent.title}}</a> (uploaded {{torrent.uploadDate()}})
+    </li>
+  {% endfor %}
+  </ul>
+</div>
+{% endblock %}

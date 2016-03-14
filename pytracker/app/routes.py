@@ -5,6 +5,7 @@
 import flask
 from .server import app, db
 from . import models
+from . import query
 from . import search
 from . import torrent
 from . import upload
@@ -30,7 +31,12 @@ def serveIndex():
     """
     serve front page
     """
-    return render_template('index.html', title="Search")
+    # get all categories
+    cats = db.session.query(models.Category).all()
+    # get last 10 torrents
+    torrents = db.session.query(models.Torrent).order_by(models.Torrent.uploaded.desc()).limit(10)
+    
+    return render_template('index.html', title="Search", categories=cats, torrents=torrents)
 
 
 @app.route("/css/dynamic.css")
@@ -89,12 +95,35 @@ def serveTorrent(tid):
 @app.route("/download/<path:fname>")
 def serveDownload(fname):
     return flask.send_from_directory(app.config["UPLOAD_DIR"], fname, as_attachment=True)
-    
-@app.route('/search')
-def handleSearchQuery():
+
+@app.route("/cat/<cat>/<int:page>")
+def serveCategoryPage(cat, page):
+    args = flask.request.args
+    prev = None
+    if page > 0:
+        prev = flask.url_for('serveCategoryPage', cat=cat, page=page-1)
+    next = flask.url_for('serveCategoryPage', cat=cat, page=page+1)
+    start = time.time()
+    q = query.torrentsByKeywordAndCategory(db.session, None, cat)
+    q = query.torrentsById(db.session, q)    
+    q = query.paginate(q, page, 10)
+    torrents = q.all()
+    dlt = time.time() - start
+    if len(torrents) == 0:
+        next = None
+    return render_template("search_results.html", results=torrents, time=round(dlt, 2), title="browse torrents", category=cat, next_page=next, prev_page=prev)
+
+@app.route('/search/<int:p>')
+def handleSearchQuery(p):
     args = flask.request.args
     terms = args.get('q', '')
+    prev = None
+    if p > 0:
+        prev = flask.url_for('handleSearchQuery', p-1)
+    next = flask.url_for('handleSearchQuery', p+1)
     start = time.time()
     results = search.find(db.session, args)
     dlt = time.time() - start
-    return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search")
+    if len(results) == 0:
+        next = None
+    return render_template("search_results.html", results=results, terms=terms, time=round(dlt, 2), title="search", page=pageno)
